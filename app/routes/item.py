@@ -3,13 +3,13 @@ from pymongo import MongoClient
 from bson import ObjectId
 from models.item import Item, ItemDB
 from database.db import db
-
-
+from routes.user import get_current_user
 route = APIRouter()
 
 
 @route.post("/items/", response_model=Item)
-async def create_item(item: Item, db_client: MongoClient = Depends(db.get_client)):
+async def create_item(item: Item, current_user: str = Depends(get_current_user), db_client: MongoClient = Depends(db.get_client)):
+    # Your existing logic
     item_dict = item.dict()
     result = db_client[db.db_name]["item"].insert_one(item_dict)
     return {**item.dict(), "id": str(result.inserted_id)}

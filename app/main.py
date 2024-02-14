@@ -1,13 +1,25 @@
 # app/main.py
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from routes.item import route as item_router  # Correct import
 from database.db import db
 from routes.user import route2
+from routes.category import industrial_route
+from routes.user import route2, get_current_user  # Import the dependency
 
 app = FastAPI()
 
-app.include_router(item_router, prefix="/api")  # Correct usage
+app.include_router(
+    item_router,
+    prefix="/api",
+    dependencies=[Depends(get_current_user)],  # Add the dependency here
+)
+
+app.include_router(
+    industrial_route,
+    prefix="/industrial_category",
+    dependencies=[Depends(get_current_user)],  # Add the dependency here
+)
 app.include_router(route2)
 
 if __name__ == "__main__":

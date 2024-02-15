@@ -8,7 +8,23 @@ from routes.category import industrial_route
 from routes.user_response import user_response_route
 from routes.user import route2, get_current_user  # Import the dependency
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "localhost:3000"
+]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = origins,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"]
+)
 
 app.include_router(
     item_router,

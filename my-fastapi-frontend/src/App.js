@@ -17,6 +17,14 @@ const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
             />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
+          <p>
+            {!showRegistrationForm
+              ? 'Not registered? '
+              : 'Already registered? '}
+            <button onClick={() => setShowRegistrationForm(!showRegistrationForm)}>
+              {showRegistrationForm ? 'Login' : 'Sign Up'}
+            </button>
+          </p>
         </header>
       </Router>
     </div>

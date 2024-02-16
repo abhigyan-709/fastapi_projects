@@ -12,18 +12,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "localhost:3000"
-]
 
 
+# Allow all origins for CORS (update this to a specific origin in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = origins,
-    allow_credentials = True,
-    allow_methods = ["*"],
-    allow_headers = ["*"]
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(
@@ -34,7 +31,6 @@ app.include_router(
 
 app.include_router(
     industrial_route,
-    prefix="/industrial_category",
     dependencies=[Depends(get_current_user)],  # Add the dependency here
 )
 app.include_router(

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Ensure you are using version 6
+import { useNavigate } from 'react-router-dom';
 import './css/LoginForm.css';
 
 const LoginForm = () => {
@@ -9,7 +9,7 @@ const LoginForm = () => {
     password: '',
   });
   const [loginMessage, setLoginMessage] = useState('');
-  const navigate = useNavigate(); // Use useNavigate for version 6
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,10 +27,16 @@ const LoginForm = () => {
         }
       );
 
+      // Extract the access token from the response
+      const accessToken = response.data.access_token;
+
+      // Store the access token in local storage
+      localStorage.setItem('access_token', accessToken);
+
       console.log(response.data);
 
       setLoginMessage('Login successful!');
-      navigate('/dashboard'); // Redirect to the dashboard
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed', error);
       setLoginMessage('');

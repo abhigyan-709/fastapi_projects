@@ -50,7 +50,7 @@ async def create_industrial_category(
 
 @industrial_route.get("/industrial_categories/", response_model=list[IndustrialCategoryDB], tags=["Industry"])
 async def get_industrial_categories(
-    current_user: str = Depends(get_current_user),
+    # current_user: str = Depends(get_current_user),
     db_client: MongoClient = Depends(db.get_client)
 ):
     # Retrieve the list of industrial categories from the databasea

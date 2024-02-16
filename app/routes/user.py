@@ -78,7 +78,6 @@ async def login_for_access_token(
     )
 
 
-
 @route2.post("/register/", tags=["Login & Authentication"])
 async def register(user: User, db_client: MongoClient = Depends(db.get_client)):
     user_dict = user.dict()
@@ -92,3 +91,27 @@ async def register(user: User, db_client: MongoClient = Depends(db.get_client)):
     # Return response with the user data
     return JSONResponse(content=user_dict, status_code=201)
 
+@route2.get("/users/me", response_model=User, tags=["Read User & Current User"])
+async def read_current_user(current_user: str = Depends(get_current_user), db_client: MongoClient = Depends(db.get_client)):
+    user_from_db = db_client[db.db_name]["user"].find_one({"username": current_user})
+    
+    if user_from_db:
+        return user_from_db
+
+    raise HTTPException(status_code=404, detail="User not found")
+
+@route2.get("/users/{user_id}", response_model=User, tags=["Read User & Current User"])
+async def read_user_by_id(
+    user_id: str,
+    current_user: str = Depends(get_current_user),
+    db_client: MongoClient = Depends(db.get_client)
+):
+    if user_id != current_user:
+        raise HTTPException(status_code=403, detail="Forbidden: You can only access your own user details")
+
+    user_from_db = db_client[db.db_name]["user"].find_one({"_id": ObjectId(user_id)})
+    
+    if user_from_db:
+        return user_from_db
+
+    raise HTTPException(status_code=404, detail="User not found")

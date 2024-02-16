@@ -1,9 +1,10 @@
-# FastAPI Project Template
+# FastAPI Project 
 
-This is a template for a FastAPI project with MongoDB integration.
+This is a backend API for the project and it will work in isolated way also for a FastAPI project with MongoDB integration.
 
 ## Project Structure
 
+``` bash
 app
 ├── database
 │ └── db.py

@@ -25,6 +25,8 @@ app
 ├── README.md
 └── requirements.txt
 
+```
+Above you have seen the project structure for the fastapi
 
 ## Setup
 

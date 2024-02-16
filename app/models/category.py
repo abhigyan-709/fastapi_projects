@@ -14,11 +14,17 @@ class Question(BaseModel):
     text: str
     answers: List[Answer]
 
+class QuestionDB(Question):
+    id: str
+
 class Section(BaseModel):
     name: str
     description: str
     questions: List[Question] = []
     questions_ids: List[str] = []  # Corrected attribute name
+
+class SectionDB(Section):
+    id: str
 
 class IndustrialCategory(BaseModel):
     name: str

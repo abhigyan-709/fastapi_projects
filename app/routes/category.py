@@ -46,3 +46,20 @@ async def create_industrial_category(
     result = db_client[db.db_name]["industrial_category"].insert_one(industrial_category_dict)
     industrial_category_db = IndustrialCategoryDB(**industrial_category.dict(), id=str(result.inserted_id))
     return industrial_category_db
+
+
+@industrial_route.get("/industrial_categories/", response_model=list[IndustrialCategoryDB], tags=["Industry"])
+async def get_industrial_categories(
+    current_user: str = Depends(get_current_user),
+    db_client: MongoClient = Depends(db.get_client)
+):
+    # Retrieve the list of industrial categories from the databasea
+    industrial_categories_cursor = db_client[db.db_name]["industrial_category"].find({})
+    industrial_categories = []
+
+    # Iterate through the cursor and convert BSON documents to models
+    for industrial_category_doc in industrial_categories_cursor:
+        industrial_category = IndustrialCategoryDB(**industrial_category_doc, id=str(industrial_category_doc["_id"]))
+        industrial_categories.append(industrial_category)
+
+    return industrial_categories

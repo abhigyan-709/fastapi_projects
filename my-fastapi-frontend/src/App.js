@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
@@ -11,7 +10,6 @@ const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
     <div className="App">
       <Router>
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <Routes>
             <Route
               path="/"

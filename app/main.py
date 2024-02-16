@@ -1,7 +1,7 @@
 # app/main.py
 
 from fastapi import FastAPI, Depends
-from routes.item import route as item_router  # Correct import
+# from routes.item import route as item_router  # Correct import
 from database.db import db
 from routes.user import route2
 from routes.category import industrial_route
@@ -23,11 +23,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(
-    item_router,
-    prefix="/api",
-    dependencies=[Depends(get_current_user)],  # Add the dependency here
-)
+# app.include_router(
+#     item_router,
+#     prefix="/api",
+#     dependencies=[Depends(get_current_user)],  # Add the dependency here
+# )
 
 app.include_router(
     industrial_route,

@@ -1,0 +1,85 @@
+{
+    "name": "Manufacturing",
+    "description": "Manufacturing is world's most important Industry",
+    "sections": [
+      {
+        "name": "Board and Committee",
+        "description": "Board and Committee Section Under Manufacturing Industry",
+        "questions": [
+          {
+            "text": "Do you have a policy on board size?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you have a policy on board independence?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you have a policy on board diversity?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you have a term limit for the board of directors?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you have a CSR committee?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          }
+        ]
+      },
+      {
+        "name": "Management",
+        "description": "Management Section under Manufacturing Industry",
+        "questions": [
+          {
+            "text": "Do you have a policy for executive retention?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Does the CEO pay link to total shareholder returns?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you engage an external consultant for compensation strategy ?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you have succession planning for CEO or key management role?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you monitor the CEO pay gap with average pay?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          }
+        ]
+      },
+      {
+        "name": "Shareholder Rights",
+        "description": "Shareholder Rights section under Manufacturing Industry",
+        "questions": [
+          {
+            "text": "Do you have a policy for equal voting?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do you have a policy for shareholder engagement?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Do your shareholders vote on directors and executives pay?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Is any stakeholder having more than 50% of company share?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          },
+          {
+            "text": "Is your company owned by a government or the states?",
+            "answers": [{"value": "yes"}, {"value": "no"}]
+          }
+        ]
+      }
+    ]
+  }
+  

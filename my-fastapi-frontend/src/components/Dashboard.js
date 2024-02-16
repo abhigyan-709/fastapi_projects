@@ -1,3 +1,4 @@
+// dashboard.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -86,7 +87,7 @@ const Dashboard = () => {
           <select value={selectedSection} onChange={handleSectionChange}>
             <option value="" disabled>Select a section</option>
             {sections.map((section) => (
-              <option key={section.id} value={section.name}>
+              <option key={section.id} value={section.id}>
                 {section.name}
               </option>
             ))}

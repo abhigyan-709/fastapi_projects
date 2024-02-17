@@ -1,4 +1,3 @@
-// dashboard.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +9,7 @@ const Dashboard = () => {
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState('');
   const [questions, setQuestions] = useState([]);
+  const [userResponses, setUserResponses] = useState([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -49,6 +49,10 @@ const Dashboard = () => {
       },
     });
     setSections(sectionsResponse.data);
+    // Reset selectedSection and questions when changing category
+    setSelectedSection('');
+    setQuestions([]);
+    setUserResponses([]);
   };
 
   const handleSectionChange = async (event) => {
@@ -63,6 +67,51 @@ const Dashboard = () => {
       },
     });
     setQuestions(questionsResponse.data);
+    // Reset userResponses when changing section
+    setUserResponses([]);
+  };
+
+  const handleRadioChange = (questionId, answer) => {
+    // Update userResponses based on the selected radio button
+    const updatedUserResponses = userResponses.map((response) => {
+      if (response.questionId === questionId) {
+        return { ...response, answer };
+      }
+      return response;
+    });
+
+    setUserResponses(updatedUserResponses);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      // Construct the UserResponse object to be sent to the server
+      const userResponse = {
+        user_id: 'user123', // Replace with the actual user ID
+        industrial_category_id: selectedCategory,
+        industry_name: selectedCategory,
+        sections: [
+          {
+            section_id: selectedSection,
+            section_name: selectedSection,
+            answers: userResponses,
+          },
+        ],
+      };
+
+      // Post the user response to the server
+      const apiUrl = "http://localhost:8000";
+      await axios.post(`${apiUrl}/user_responses/`, userResponse, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+
+      // Display a success message or perform other actions as needed
+      console.log('User response submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting user response', error);
+    }
   };
 
   return (
@@ -102,8 +151,31 @@ const Dashboard = () => {
           {questions.map((question) => (
             <div key={question.id}>
               <p>{question.text}</p>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name={`question_${question.id}`}
+                    value="yes"
+                    checked={userResponses.some((response) => response.questionId === question.id && response.answer === 'yes')}
+                    onChange={() => handleRadioChange(question.id, 'yes')}
+                  />
+                  Yes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name={`question_${question.id}`}
+                    value="no"
+                    checked={userResponses.some((response) => response.questionId === question.id && response.answer === 'no')}
+                    onChange={() => handleRadioChange(question.id, 'no')}
+                  />
+                  No
+                </label>
+              </div>
             </div>
           ))}
+          <button onClick={handleSubmit}>Submit Responses</button>
         </div>
       )}
     </div>

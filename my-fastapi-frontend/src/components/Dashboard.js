@@ -100,6 +100,26 @@ const Dashboard = () => {
     }
   }, [selectedSection]);
 
+  useEffect(() => {
+    // Filter categories, sections, and questions based on selectedCategory and selectedSection
+    const selectedCategoryData = categories.find((category) => category.name === selectedCategory);
+    const selectedSectionData = sections.find((section) => section.id === selectedSection);
+    const selectedQuestionsData = questions.filter((question) => question.section_id === selectedSection);
+
+    // Create an object to represent the selected data
+    const selectedData = {
+      selectedCategory: selectedCategoryData,
+      selectedSection: selectedSectionData,
+      selectedQuestions: selectedQuestionsData,
+    };
+
+    // Log the selected data whenever it changes
+    console.log('Selected Data:', selectedData);
+
+    // Optionally, you can store the selected data in local storage if needed
+    localStorage.setItem('selectedData', JSON.stringify(selectedData));
+  }, [selectedCategory, selectedSection, categories, sections, questions]);
+
   const handleCategoryChange = async (event) => {
     const selectedCategoryValue = event.target.value;
     setSelectedCategory(selectedCategoryValue);
@@ -148,20 +168,38 @@ const Dashboard = () => {
 
   const handleSubmit = async () => {
     try {
+      // Retrieve selected data from localStorage
+      const storedSelectedData = localStorage.getItem('selectedData');
+      if (!storedSelectedData) {
+        console.error('Selected data not found in localStorage.');
+        return;
+      }
+  
+      const { selectedCategory, selectedSection, selectedQuestions } = JSON.parse(storedSelectedData);
+  
+      // Ensure that selectedCategory is not undefined and has the id property
+      if (!selectedCategory || !selectedCategory.id) {
+        console.error('Selected category or its id is missing.');
+        return;
+      }
+  
+      // Log all data in selectedCategory
+      console.log('Selected Category:', selectedCategory);
+  
       // Construct the UserResponse object to be sent to the server
       const userResponse = {
         user_id: 'user123', // Replace with the actual user ID
-        industrial_category_id: selectedCategory,
-        industry_name: selectedCategory,
+        industrial_category_id: selectedCategory.id,
+        industry_name: selectedCategory.name,
         sections: [
           {
-            section_id: selectedSection,
-            section_name: selectedSection,
+            section_id: selectedSection.id,
+            section_name: selectedSection.name,
             answers: userResponses,
           },
         ],
       };
-
+  
       // Post the user response to the server
       const apiUrl = "http://localhost:8000";
       await axios.post(`${apiUrl}/user_responses/`, userResponse, {
@@ -169,13 +207,15 @@ const Dashboard = () => {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       });
-
+  
       // Display a success message or perform other actions as needed
       console.log('User response submitted successfully!');
     } catch (error) {
       console.error('Error submitting user response', error);
     }
   };
+  
+  
 
   const handleLogout = () => {
     // Clear the access token and data from local storage
@@ -183,16 +223,10 @@ const Dashboard = () => {
     localStorage.removeItem('categories');
     localStorage.removeItem('sections');
     localStorage.removeItem('questions');
+    localStorage.removeItem('selectedData'); // Remove selectedData from local storage
     // Redirect to the login page
     navigate('/');
   };
-
-  // Log stored data whenever it changes
-  useEffect(() => {
-    console.log('Stored Categories:', JSON.parse(localStorage.getItem('categories')));
-    console.log('Stored Sections:', JSON.parse(localStorage.getItem('sections')));
-    console.log('Stored Questions:', JSON.parse(localStorage.getItem('questions')));
-  }, [categories, sections, questions]);
 
   return (
     <div>

@@ -22,20 +22,83 @@ const Dashboard = () => {
           },
         });
         setCategories(response.data);
+
+        // Save categories to local storage
+        localStorage.setItem('categories', JSON.stringify(response.data));
       } catch (error) {
         console.error('Error fetching categories', error);
       }
     };
 
-    fetchCategories();
+    // Check if categories are already in local storage
+    const storedCategories = localStorage.getItem('categories');
+    if (storedCategories) {
+      setCategories(JSON.parse(storedCategories));
+    } else {
+      // Fetch categories if not present in local storage
+      fetchCategories();
+    }
   }, []);
 
-  const handleLogout = () => {
-    // Clear the access token from local storage
-    localStorage.removeItem('access_token');
-    // Redirect to the login page
-    navigate('/');
-  };
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const apiUrl = "http://localhost:8000";
+        const sectionsResponse = await axios.get(`${apiUrl}/industrial_categories/${selectedCategory}/sections`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setSections(sectionsResponse.data);
+
+        // Save sections to local storage
+        localStorage.setItem('sections', JSON.stringify(sectionsResponse.data));
+      } catch (error) {
+        console.error('Error fetching sections', error);
+      }
+    };
+
+    if (selectedCategory) {
+      const storedSections = localStorage.getItem('sections');
+      if (storedSections) {
+        setSections(JSON.parse(storedSections));
+      } else {
+        // Fetch sections if not present in local storage
+        fetchSections();
+      }
+    }
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const apiUrl = "http://localhost:8000";
+        const questionsResponse = await axios.get(`${apiUrl}/sections/${selectedSection}/questions`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setQuestions(questionsResponse.data);
+
+        // Save questions to local storage
+        localStorage.setItem('questions', JSON.stringify(questionsResponse.data));
+      } catch (error) {
+        console.error('Error fetching questions', error);
+      }
+    };
+
+    if (selectedSection) {
+      const storedQuestions = localStorage.getItem('questions');
+      if (storedQuestions) {
+        setQuestions(JSON.parse(storedQuestions));
+      } else {
+        // Fetch questions if not present in local storage
+        fetchQuestions();
+      }
+    }
+  }, [selectedSection]);
 
   const handleCategoryChange = async (event) => {
     const selectedCategoryValue = event.target.value;
@@ -113,6 +176,23 @@ const Dashboard = () => {
       console.error('Error submitting user response', error);
     }
   };
+
+  const handleLogout = () => {
+    // Clear the access token and data from local storage
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('categories');
+    localStorage.removeItem('sections');
+    localStorage.removeItem('questions');
+    // Redirect to the login page
+    navigate('/');
+  };
+
+  // Log stored data whenever it changes
+  useEffect(() => {
+    console.log('Stored Categories:', JSON.parse(localStorage.getItem('categories')));
+    console.log('Stored Sections:', JSON.parse(localStorage.getItem('sections')));
+    console.log('Stored Questions:', JSON.parse(localStorage.getItem('questions')));
+  }, [categories, sections, questions]);
 
   return (
     <div>

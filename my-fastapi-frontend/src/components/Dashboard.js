@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.css';
 import './css/Dashboard.css';
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -285,25 +287,29 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <h2>Dashboard</h2>
+    <div className="container mt-5">
+      <h2 className="mb-4">Dashboard</h2>
       <p>Welcome to the Dashboard!</p>
-      <button onClick={handleLogout}>Logout</button>
+      <button className="btn btn-danger" onClick={handleLogout}>
+        Logout
+      </button>
 
-      <h3>Select Industrial Category:</h3>
-      <select value={selectedCategory} onChange={handleCategoryChange}>
-        <option value="" disabled>Select a category</option>
-        {categories.map((category) => (
-          <option key={category.id} value={category.name}>
-            {category.name}
-          </option>
-        ))}
-      </select>
+      <div className="mb-4">
+        <h3>Select Industrial Category:</h3>
+        <select className="form-select" value={selectedCategory} onChange={handleCategoryChange}>
+          <option value="" disabled>Select a category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.name}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {selectedCategory && (
-        <>
+        <div className="mb-4">
           <h3>Select Section:</h3>
-          <select value={selectedSection} onChange={handleSectionChange}>
+          <select className="form-select" value={selectedSection} onChange={handleSectionChange}>
             <option value="" disabled>Select a section</option>
             {sections.map((section) => (
               <option key={section.id} value={section.id}>
@@ -311,43 +317,47 @@ const Dashboard = () => {
               </option>
             ))}
           </select>
-        </>
+        </div>
       )}
 
       {selectedSection && (
         <div>
-          {questions.map((question) => (
-            <div key={question.id}>
-              <p>{question.text}</p>
-              <div>
-                <label>
-                  <input
-                    type="radio"
-                    name={`question_${question.id}`}
-                    value="yes"
-                    checked={userResponses.find((response) => response.question_id === question.id)?.answer === 'yes'}
-                    onChange={() => handleRadioChange(question.id, 'yes')}
-                  />
-                  Yes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name={`question_${question.id}`}
-                    value="no"
-                    checked={userResponses.find((response) => response.question_id === question.id)?.answer === 'no'}
-                    onChange={() => handleRadioChange(question.id, 'no')}
-                  />
-                  No
-                </label>
+          <div className="text-start"> {/* Add text-start class for left alignment */}
+            {questions.map((question) => (
+              <div key={question.id} className="mb-3">
+                <p>{question.text}</p>
+                <div>
+                  <label className="form-check-label me-3">
+                    <input
+                      type="radio"
+                      name={`question_${question.id}`}
+                      value="yes"
+                      checked={userResponses.find((response) => response.question_id === question.id)?.answer === 'yes'}
+                      onChange={() => handleRadioChange(question.id, 'yes')}
+                      className="form-check-input"
+                    />
+                    Yes
+                  </label>
+                  <label className="form-check-label">
+                    <input
+                      type="radio"
+                      name={`question_${question.id}`}
+                      value="no"
+                      checked={userResponses.find((response) => response.question_id === question.id)?.answer === 'no'}
+                      onChange={() => handleRadioChange(question.id, 'no')}
+                      className="form-check-input"
+                    />
+                    No
+                  </label>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
 
-          <button onClick={handleSaveAndContinue}>
+          <button className="btn btn-primary me-2" onClick={handleSaveAndContinue}>
             Save and Continue
           </button>
-          <button onClick={handleSubmit}>
+          <button className="btn btn-success" onClick={handleSubmit}>
             Submit Responses
           </button>
         </div>

@@ -8,10 +8,14 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 const Header = () => {
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        <Link className="navbar-brand" to="/">
+        <Link className="navbar-brand" to="/" onClick={handleLogout}>
           Your App Name
         </Link>
       </div>

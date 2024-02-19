@@ -42,7 +42,13 @@ const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
           <Routes>
             <Route
               path="/"
-              element={showRegistrationForm ? <RegistrationForm /> : <LoginForm />}
+              element={
+                showRegistrationForm ? (
+                  <RegistrationForm setShowRegistrationForm={setShowRegistrationForm} />
+                ) : (
+                  <LoginForm setShowRegistrationForm={setShowRegistrationForm} />
+                )
+              }
             />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/response" element={<Response />} />
@@ -53,6 +59,7 @@ const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
     </div>
   );
 };
+
 
 function App() {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css'; // Import Bootstrap CSS
 import './css/LoginForm.css';
 
-const LoginForm = () => {
+const LoginForm = ({ setShowRegistrationForm }) => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -51,6 +51,7 @@ const LoginForm = () => {
 
       setLoginMessage('Login successful!');
       navigate('/dashboard'); // Assuming you have a route named 'dashboard'
+      setShowRegistrationForm(false);
     } catch (error) {
       console.error('Login failed', error);
       setLoginMessage('');
@@ -86,6 +87,9 @@ const LoginForm = () => {
         <button onClick={handleLogin} className="btn btn-primary">
           Login
         </button>
+        <button onClick={() => setShowRegistrationForm(true)} className="btn btn-secondary">
+        Register
+      </button>
       </div>
       {loginMessage && <p className="mt-3">{loginMessage}</p>}
     </div>

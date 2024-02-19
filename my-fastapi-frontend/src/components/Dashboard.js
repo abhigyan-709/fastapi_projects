@@ -25,19 +25,16 @@ const Dashboard = () => {
         });
         setCategories(response.data);
 
-        // Save categories to local storage
         localStorage.setItem('categories', JSON.stringify(response.data));
       } catch (error) {
         console.error('Error fetching categories', error);
       }
     };
 
-    // Check if categories are already in local storage
     const storedCategories = localStorage.getItem('categories');
     if (storedCategories) {
       setCategories(JSON.parse(storedCategories));
     } else {
-      // Fetch categories if not present in local storage
       fetchCategories();
     }
   }, []);
@@ -54,7 +51,6 @@ const Dashboard = () => {
         });
         setSections(sectionsResponse.data);
 
-        // Save sections to local storage
         localStorage.setItem('sections', JSON.stringify(sectionsResponse.data));
       } catch (error) {
         console.error('Error fetching sections', error);
@@ -66,7 +62,6 @@ const Dashboard = () => {
       if (storedSections) {
         setSections(JSON.parse(storedSections));
       } else {
-        // Fetch sections if not present in local storage
         fetchSections();
       }
     }
@@ -84,7 +79,6 @@ const Dashboard = () => {
         });
         setQuestions(questionsResponse.data);
 
-        // Save questions to local storage
         localStorage.setItem('questions', JSON.stringify(questionsResponse.data));
       } catch (error) {
         console.error('Error fetching questions', error);
@@ -96,26 +90,21 @@ const Dashboard = () => {
       if (storedQuestions) {
         setQuestions(JSON.parse(storedQuestions));
       } else {
-        // Fetch questions if not present in local storage
         fetchQuestions();
       }
     }
   }, [selectedSection]);
 
   useEffect(() => {
-    // Filter categories, sections, and questions based on selectedCategory and selectedSection
     const selectedCategoryData = categories.find((category) => category.name === selectedCategory);
     const selectedSectionData = sections.find((section) => section.id === selectedSection);
 
-    // Check if selectedSectionData and its questions are defined
     if (selectedSectionData && selectedSectionData.questions) {
-      // Map questions_ids to the respective questions
       const mappedQuestions = selectedSectionData.questions.map((question, index) => ({
         ...question,
         question_id: selectedSectionData.questions_ids[index],
       }));
 
-      // Create an object to represent the selected data
       const selectedData = {
         selectedCategory: selectedCategoryData,
         selectedSection: {
@@ -124,7 +113,6 @@ const Dashboard = () => {
         },
       };
 
-      // Use selectedData to set initial userResponses
       if (selectedSectionData.questions) {
         const initialUserResponses = selectedSectionData.questions.map((question) => {
           const answer = question.answers && question.answers.length > 0 ? question.answers[0].value : '';
@@ -133,7 +121,6 @@ const Dashboard = () => {
         setUserResponses(initialUserResponses);
       }
 
-      // Optionally, you can store the selected data in local storage if needed
       localStorage.setItem('selectedData', JSON.stringify(selectedData));
     }
   }, [selectedCategory, selectedSection, categories, sections]);
@@ -142,7 +129,6 @@ const Dashboard = () => {
     const selectedCategoryValue = event.target.value;
     setSelectedCategory(selectedCategoryValue);
 
-    // Fetch sections for the selected category
     const apiUrl = "http://localhost:8000";
     const sectionsResponse = await axios.get(`${apiUrl}/industrial_categories/${selectedCategoryValue}/sections`, {
       headers: {
@@ -150,7 +136,6 @@ const Dashboard = () => {
       },
     });
     setSections(sectionsResponse.data);
-    // Reset selectedSection and questions when changing category
     setSelectedSection('');
     setQuestions([]);
     setUserResponses([]);
@@ -160,7 +145,6 @@ const Dashboard = () => {
     const selectedSectionValue = event.target.value;
     setSelectedSection(selectedSectionValue);
 
-    // Fetch questions for the selected section
     const apiUrl = "http://localhost:8000";
     const questionsResponse = await axios.get(`${apiUrl}/sections/${selectedSectionValue}/questions`, {
       headers: {
@@ -168,22 +152,17 @@ const Dashboard = () => {
       },
     });
     setQuestions(questionsResponse.data);
-    // Reset userResponses when changing section
     setUserResponses([]);
   };
 
   const handleRadioChange = (questionId, answer) => {
-    // Update userResponses based on the selected radio button
     const updatedUserResponses = [...userResponses];
 
-    // Check if the question already exists in userResponses
     const existingResponseIndex = updatedUserResponses.findIndex(response => response.question_id === questionId);
 
     if (existingResponseIndex !== -1) {
-      // If the question exists, update its answer
       updatedUserResponses[existingResponseIndex].answer = answer;
     } else {
-      // If the question doesn't exist, add it to userResponses
       updatedUserResponses.push({ question_id: questionId, answer });
     }
 
@@ -191,7 +170,6 @@ const Dashboard = () => {
   };
 
   const handleSaveAndContinue = () => {
-    // Save the current responses locally and move to the next section
     const storedSelectedData = localStorage.getItem('selectedData');
     if (!storedSelectedData) {
       console.error('Selected data not found in localStorage.');
@@ -200,7 +178,6 @@ const Dashboard = () => {
 
     const { selectedCategory, selectedSection } = JSON.parse(storedSelectedData);
 
-    // Ensure that selectedCategory and selectedSection are not undefined and have the required properties
     if (!selectedCategory || !selectedCategory.id || !selectedSection || !selectedSection.id) {
       console.error('Selected category, section, or their ids are missing.');
       return;
@@ -208,9 +185,8 @@ const Dashboard = () => {
 
     const username = localStorage.getItem('username');
 
-    // Construct the UserResponse object to be saved locally
     const userResponse = {
-      user_id: username, // Replace with the actual user ID
+      user_id: username,
       industrial_category_id: selectedCategory.id,
       industry_name: selectedCategory.name,
       section_id: selectedSection.id,
@@ -225,17 +201,13 @@ const Dashboard = () => {
       }),
     };
 
-    // Save the userResponse locally
     const storedUserResponses = localStorage.getItem('userResponses') || '[]';
     const existingUserResponses = JSON.parse(storedUserResponses);
     const updatedUserResponses = [...existingUserResponses, userResponse];
     localStorage.setItem('userResponses', JSON.stringify(updatedUserResponses));
 
-    // Move to the next section if available
     if (currentSectionIndex < sections.length - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
-
-      // Reset questions and userResponses for the new section
       setQuestions([]);
       setUserResponses([]);
     } else {
@@ -245,7 +217,6 @@ const Dashboard = () => {
 
   const handleSubmit = async () => {
     try {
-      // Retrieve selected data from localStorage
       const storedSelectedData = localStorage.getItem('selectedData');
       if (!storedSelectedData) {
         console.error('Selected data not found in localStorage.');
@@ -254,7 +225,6 @@ const Dashboard = () => {
 
       const { selectedCategory, selectedSection } = JSON.parse(storedSelectedData);
 
-      // Ensure that selectedCategory and selectedSection are not undefined and have the required properties
       if (!selectedCategory || !selectedCategory.id || !selectedSection || !selectedSection.id) {
         console.error('Selected category, section, or their ids are missing.');
         return;
@@ -262,18 +232,15 @@ const Dashboard = () => {
 
       const username = localStorage.getItem('username');
 
-      // Construct the final UserResponse object to be sent to the server
       const userResponse = {
-        user_id: username, // Replace with the actual user ID
+        user_id: username,
         industrial_category_id: selectedCategory.id,
         industry_name: selectedCategory.name,
         sections: JSON.parse(localStorage.getItem('userResponses') || '[]'),
       };
 
-      // Log the userResponse
       console.log('User Response:', userResponse);
 
-      // Post the user response to the server
       const apiUrl = "http://localhost:8000";
       await axios.post(`${apiUrl}/user_responses/`, userResponse, {
         headers: {
@@ -281,30 +248,26 @@ const Dashboard = () => {
         },
       });
 
-      // Display a success message or perform other actions as needed
       console.log('User response submitted successfully!');
 
-      // Reset the state and redirect to the initial state
       setSelectedCategory('');
       setSelectedSection('');
       setSections([]);
       setCurrentSectionIndex(0);
       setUserResponses([]);
-      localStorage.removeItem('userResponses'); // Remove saved userResponses
+      localStorage.removeItem('userResponses');
     } catch (error) {
       console.error('Error submitting user response', error);
     }
   };
 
   const handleLogout = () => {
-    // Clear the access token and data from local storage
     localStorage.removeItem('access_token');
     localStorage.removeItem('categories');
     localStorage.removeItem('sections');
     localStorage.removeItem('questions');
-    localStorage.removeItem('selectedData'); // Remove selectedData from local storage
-    localStorage.removeItem('userResponses'); // Remove saved userResponses
-    // Redirect to the login page
+    localStorage.removeItem('selectedData');
+    localStorage.removeItem('userResponses');
     navigate('/');
   };
 

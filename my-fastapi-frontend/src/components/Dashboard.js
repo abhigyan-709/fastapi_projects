@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './css/Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -104,7 +105,7 @@ const Dashboard = () => {
     // Filter categories, sections, and questions based on selectedCategory and selectedSection
     const selectedCategoryData = categories.find((category) => category.name === selectedCategory);
     const selectedSectionData = sections.find((section) => section.id === selectedSection);
-  
+
     // Check if selectedSectionData and its questions are defined
     if (selectedSectionData && selectedSectionData.questions) {
       // Map questions_ids to the respective questions
@@ -112,7 +113,7 @@ const Dashboard = () => {
         ...question,
         question_id: selectedSectionData.questions_ids[index],
       }));
-  
+
       // Create an object to represent the selected data
       const selectedData = {
         selectedCategory: selectedCategoryData,
@@ -121,15 +122,23 @@ const Dashboard = () => {
           questions: mappedQuestions,
         },
       };
-  
+
       // Log the selected data whenever it changes
-      console.log('Selected Data:', selectedData);
-  
+      // console.log('Selected Data:', selectedData);
+
+      // Use selectedData to set initial userResponses
+      if (selectedSectionData.questions) {
+        const initialUserResponses = selectedSectionData.questions.map((question) => {
+          const answer = question.answers && question.answers.length > 0 ? question.answers[0].value : '';
+          return { question_id: question.question_id, answer };
+        });
+        setUserResponses(initialUserResponses);
+      }
+
       // Optionally, you can store the selected data in local storage if needed
       localStorage.setItem('selectedData', JSON.stringify(selectedData));
     }
   }, [selectedCategory, selectedSection, categories, sections]);
-  
 
   const handleCategoryChange = async (event) => {
     const selectedCategoryValue = event.target.value;
@@ -167,13 +176,21 @@ const Dashboard = () => {
 
   const handleRadioChange = (questionId, answer) => {
     // Update userResponses based on the selected radio button
-    const updatedUserResponses = userResponses.map((response) => {
-      if (response.questionId === questionId) {
-        return { ...response, answer };
-      }
-      return response;
-    });
+    const updatedUserResponses = [...userResponses];
 
+    // Check if the question already exists in userResponses
+    const existingResponseIndex = updatedUserResponses.findIndex(response => response.question_id === questionId);
+
+    console.log('Radio button group name:', `question_${questionId}`); // Add this log statement
+
+    if (existingResponseIndex !== -1) {
+      // If the question exists, update its answer
+      updatedUserResponses[existingResponseIndex].answer = answer;
+    } else {
+      // If the question doesn't exist, add it to userResponses
+      updatedUserResponses.push({ question_id: questionId, answer });
+    }
+    console.log(updatedUserResponses);
     setUserResponses(updatedUserResponses);
   };
 
@@ -185,18 +202,15 @@ const Dashboard = () => {
         console.error('Selected data not found in localStorage.');
         return;
       }
-  
+
       const { selectedCategory, selectedSection } = JSON.parse(storedSelectedData);
-  
+
       // Ensure that selectedCategory and selectedSection are not undefined and have the required properties
       if (!selectedCategory || !selectedCategory.id || !selectedSection || !selectedSection.id) {
         console.error('Selected category, section, or their ids are missing.');
         return;
       }
-  
-      // Log all data in selectedCategory
-      console.log('Selected Category:', selectedCategory);
-  
+
       // Construct the UserResponse object to be sent to the server
       const userResponse = {
         user_id: 'user123', // Replace with the actual user ID
@@ -206,16 +220,23 @@ const Dashboard = () => {
           {
             section_id: selectedSection.id,
             section_name: selectedSection.name,
-            answers: selectedSection.questions.map((question) => ({
-              question_id: question.question_id,
-              question_text: question.text,
-              answer: question.answers[0].value, // Assuming answers is an array with one value
-            })),
+            answers: selectedSection.questions.map((question) => {
+              const userResponseForQuestion = userResponses.find((response) => response.question_id === question.question_id);
+              return {
+                question_id: question.question_id,
+                question_text: question.text,
+                answer: userResponseForQuestion ? userResponseForQuestion.answer : '',
+              };
+
+            }),
+
           },
         ],
       };
-      console.log('User Response:', userResponse)
-  
+
+      // Log the userResponse
+      console.log('User Response:', userResponse);
+
       // Post the user response to the server
       const apiUrl = "http://localhost:8000";
       await axios.post(`${apiUrl}/user_responses/`, userResponse, {
@@ -223,14 +244,13 @@ const Dashboard = () => {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       });
-  
+
       // Display a success message or perform other actions as needed
       console.log('User response submitted successfully!');
     } catch (error) {
       console.error('Error submitting user response', error);
     }
   };
-  
 
   const handleLogout = () => {
     // Clear the access token and data from local storage
@@ -275,8 +295,6 @@ const Dashboard = () => {
 
       {selectedSection && (
         <div>
-          <h3>Details for {selectedCategory} - {selectedSection}:</h3>
-          {/* Display other category and section details as needed */}
           {questions.map((question) => (
             <div key={question.id}>
               <p>{question.text}</p>
@@ -286,7 +304,7 @@ const Dashboard = () => {
                     type="radio"
                     name={`question_${question.id}`}
                     value="yes"
-                    checked={userResponses.some((response) => response.questionId === question.id && response.answer === 'yes')}
+                    checked={userResponses.find((response) => response.question_id === question.id)?.answer === 'yes'}
                     onChange={() => handleRadioChange(question.id, 'yes')}
                   />
                   Yes
@@ -296,7 +314,7 @@ const Dashboard = () => {
                     type="radio"
                     name={`question_${question.id}`}
                     value="no"
-                    checked={userResponses.some((response) => response.questionId === question.id && response.answer === 'no')}
+                    checked={userResponses.find((response) => response.question_id === question.id)?.answer === 'no'}
                     onChange={() => handleRadioChange(question.id, 'no')}
                   />
                   No
@@ -304,6 +322,7 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
+
           <button onClick={handleSubmit}>Submit Responses</button>
         </div>
       )}

@@ -1,0 +1,12 @@
+/* Dashboard.css */
+
+input[type="radio"] {
+    margin-right: 5px; /* Adjust the spacing as needed */
+  }
+  
+  input[type="radio"]:checked {
+    background-color: #007bff; /* Change the background color to your desired color */
+    border-color: #007bff; /* Change the border color to match the background color */
+    color: #fff; /* Change the text color to white or a color that contrasts well with the background color */
+  }
+  

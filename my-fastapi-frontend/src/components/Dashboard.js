@@ -248,7 +248,13 @@ const Dashboard = () => {
         },
       });
 
-      console.log('User response submitted successfully!');
+      console.log('User response submitted successfully!', userResponse);
+
+      // Store userResponse locally for future reference
+      const storedUserResponses = localStorage.getItem('allUserResponses') || '[]';
+      const existingUserResponses = JSON.parse(storedUserResponses);
+      const updatedUserResponses = [...existingUserResponses, userResponse];
+      localStorage.setItem('allUserResponses', JSON.stringify(updatedUserResponses));
 
       setSelectedCategory('');
       setSelectedSection('');
@@ -260,6 +266,7 @@ const Dashboard = () => {
       console.error('Error submitting user response', error);
     }
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');

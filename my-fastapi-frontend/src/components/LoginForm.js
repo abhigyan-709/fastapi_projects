@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.css'; // Import Bootstrap CSS
 import './css/LoginForm.css';
 
 const LoginForm = () => {
@@ -57,32 +58,36 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <div className="login-form">
-        <label>
+    <div className="login-container d-flex align-items-center justify-content-center">
+      <div className="login-form p-4 border">
+        <h2 className="mb-4">Login</h2>
+        <label className="mb-3">
           Username:
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleInputChange}
+            className="form-control"
           />
         </label>
 
-        <label>
+        <label className="mb-3">
           Password:
           <input
             type="password"
             name="password"
             value={formData.password}
             onChange={handleInputChange}
+            className="form-control"
           />
         </label>
 
-        <button onClick={handleLogin}>Login</button>
+        <button onClick={handleLogin} className="btn btn-primary">
+          Login
+        </button>
       </div>
-      {loginMessage && <p>{loginMessage}</p>}
+      {loginMessage && <p className="mt-3">{loginMessage}</p>}
     </div>
   );
 };

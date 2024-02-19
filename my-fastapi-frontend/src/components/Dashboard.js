@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [selectedSection, setSelectedSection] = useState('');
   const [questions, setQuestions] = useState([]);
   const [userResponses, setUserResponses] = useState([]);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -123,9 +124,6 @@ const Dashboard = () => {
         },
       };
 
-      // Log the selected data whenever it changes
-      // console.log('Selected Data:', selectedData);
-
       // Use selectedData to set initial userResponses
       if (selectedSectionData.questions) {
         const initialUserResponses = selectedSectionData.questions.map((question) => {
@@ -181,8 +179,6 @@ const Dashboard = () => {
     // Check if the question already exists in userResponses
     const existingResponseIndex = updatedUserResponses.findIndex(response => response.question_id === questionId);
 
-    console.log('Radio button group name:', `question_${questionId}`); // Add this log statement
-
     if (existingResponseIndex !== -1) {
       // If the question exists, update its answer
       updatedUserResponses[existingResponseIndex].answer = answer;
@@ -190,8 +186,61 @@ const Dashboard = () => {
       // If the question doesn't exist, add it to userResponses
       updatedUserResponses.push({ question_id: questionId, answer });
     }
-    console.log(updatedUserResponses);
+
     setUserResponses(updatedUserResponses);
+  };
+
+  const handleSaveAndContinue = () => {
+    // Save the current responses locally and move to the next section
+    const storedSelectedData = localStorage.getItem('selectedData');
+    if (!storedSelectedData) {
+      console.error('Selected data not found in localStorage.');
+      return;
+    }
+
+    const { selectedCategory, selectedSection } = JSON.parse(storedSelectedData);
+
+    // Ensure that selectedCategory and selectedSection are not undefined and have the required properties
+    if (!selectedCategory || !selectedCategory.id || !selectedSection || !selectedSection.id) {
+      console.error('Selected category, section, or their ids are missing.');
+      return;
+    }
+
+    const username = localStorage.getItem('username');
+
+    // Construct the UserResponse object to be saved locally
+    const userResponse = {
+      user_id: username, // Replace with the actual user ID
+      industrial_category_id: selectedCategory.id,
+      industry_name: selectedCategory.name,
+      section_id: selectedSection.id,
+      section_name: selectedSection.name,
+      answers: userResponses.map((response) => {
+        const question = selectedSection.questions.find((question) => question.question_id === response.question_id);
+        return {
+          question_id: response.question_id,
+          question_text: question ? question.text : '',
+          answer: response.answer,
+        };
+      }),
+    };
+
+    // Save the userResponse locally
+    const storedUserResponses = localStorage.getItem('userResponses') || '[]';
+    const existingUserResponses = JSON.parse(storedUserResponses);
+    const updatedUserResponses = [...existingUserResponses, userResponse];
+    localStorage.setItem('userResponses', JSON.stringify(updatedUserResponses));
+
+    // Move to the next section if available
+    if (currentSectionIndex < sections.length - 1) {
+      setCurrentSectionIndex(currentSectionIndex + 1);
+
+      // Reset questions and userResponses for the new section
+      setQuestions([]);
+      setUserResponses([]);
+    } else {
+      console.error('No next section available.');
+    }
   };
 
   const handleSubmit = async () => {
@@ -213,27 +262,12 @@ const Dashboard = () => {
 
       const username = localStorage.getItem('username');
 
-      // Construct the UserResponse object to be sent to the server
+      // Construct the final UserResponse object to be sent to the server
       const userResponse = {
         user_id: username, // Replace with the actual user ID
         industrial_category_id: selectedCategory.id,
         industry_name: selectedCategory.name,
-        sections: [
-          {
-            section_id: selectedSection.id,
-            section_name: selectedSection.name,
-            answers: selectedSection.questions.map((question) => {
-              const userResponseForQuestion = userResponses.find((response) => response.question_id === question.question_id);
-              return {
-                question_id: question.question_id,
-                question_text: question.text,
-                answer: userResponseForQuestion ? userResponseForQuestion.answer : '',
-              };
-
-            }),
-
-          },
-        ],
+        sections: JSON.parse(localStorage.getItem('userResponses') || '[]'),
       };
 
       // Log the userResponse
@@ -249,6 +283,14 @@ const Dashboard = () => {
 
       // Display a success message or perform other actions as needed
       console.log('User response submitted successfully!');
+
+      // Reset the state and redirect to the initial state
+      setSelectedCategory('');
+      setSelectedSection('');
+      setSections([]);
+      setCurrentSectionIndex(0);
+      setUserResponses([]);
+      localStorage.removeItem('userResponses'); // Remove saved userResponses
     } catch (error) {
       console.error('Error submitting user response', error);
     }
@@ -261,6 +303,7 @@ const Dashboard = () => {
     localStorage.removeItem('sections');
     localStorage.removeItem('questions');
     localStorage.removeItem('selectedData'); // Remove selectedData from local storage
+    localStorage.removeItem('userResponses'); // Remove saved userResponses
     // Redirect to the login page
     navigate('/');
   };
@@ -325,7 +368,12 @@ const Dashboard = () => {
             </div>
           ))}
 
-          <button onClick={handleSubmit}>Submit Responses</button>
+          <button onClick={handleSaveAndContinue}>
+            Save and Continue
+          </button>
+          <button onClick={handleSubmit}>
+            Submit Responses
+          </button>
         </div>
       )}
     </div>

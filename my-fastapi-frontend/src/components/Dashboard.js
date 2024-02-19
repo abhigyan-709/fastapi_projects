@@ -211,9 +211,11 @@ const Dashboard = () => {
         return;
       }
 
+      const username = localStorage.getItem('username');
+
       // Construct the UserResponse object to be sent to the server
       const userResponse = {
-        user_id: 'user123', // Replace with the actual user ID
+        user_id: username, // Replace with the actual user ID
         industrial_category_id: selectedCategory.id,
         industry_name: selectedCategory.name,
         sections: [

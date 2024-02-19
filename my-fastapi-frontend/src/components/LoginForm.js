@@ -27,11 +27,13 @@ const LoginForm = () => {
         }
       );
 
-      // Extract the access token from the response
+      // Extract the access token and username from the response
       const accessToken = response.data.access_token;
+      const username = formData.username;
 
-      // Store the access token in local storage
+      // Store the access token and username in local storage
       localStorage.setItem('access_token', accessToken);
+      localStorage.setItem('username', username);
 
       // Fetch user details using the access token
       const userResponse = await axios.get('http://127.0.0.1:8000/users/me', {
@@ -44,9 +46,10 @@ const LoginForm = () => {
       localStorage.setItem('user_details', JSON.stringify(userResponse.data));
 
       console.log(response.data);
+      console.log('UserName: ', formData.username);
 
       setLoginMessage('Login successful!');
-      navigate('/dashboard');
+      navigate('/dashboard'); // Assuming you have a route named 'dashboard'
     } catch (error) {
       console.error('Login failed', error);
       setLoginMessage('');

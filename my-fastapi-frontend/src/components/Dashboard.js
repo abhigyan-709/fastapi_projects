@@ -1,7 +1,9 @@
+// Dashboard.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/Dashboard.css';
+import Response from './Response'; // Import the Response component
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -256,6 +258,9 @@ const Dashboard = () => {
       const updatedUserResponses = [...existingUserResponses, userResponse];
       localStorage.setItem('allUserResponses', JSON.stringify(updatedUserResponses));
 
+      // Navigate to the Response page after successful submission
+      navigate('/response');
+
       setSelectedCategory('');
       setSelectedSection('');
       setSections([]);
@@ -266,7 +271,6 @@ const Dashboard = () => {
       console.error('Error submitting user response', error);
     }
   };
-  
 
   const handleLogout = () => {
     localStorage.removeItem('access_token');

@@ -3,6 +3,7 @@ import './App.css';
 import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
 import Dashboard from './components/Dashboard'; // Import the Dashboard component
+import Response from './components/Response'; // Import the Dashboard component
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Update the import
 
 const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
@@ -16,6 +17,7 @@ const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
               element={showRegistrationForm ? <RegistrationForm /> : <LoginForm />}
             />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/response" element={<Response />} />
           </Routes>
           <p>
             {!showRegistrationForm

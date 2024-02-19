@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './css/Dashboard.css';
-import Response from './Response'; // Import the Response component
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -207,6 +206,7 @@ const Dashboard = () => {
     const existingUserResponses = JSON.parse(storedUserResponses);
     const updatedUserResponses = [...existingUserResponses, userResponse];
     localStorage.setItem('userResponses', JSON.stringify(updatedUserResponses));
+    localStorage.setItem('userResponse', JSON.stringify(userResponse)); // Store the current user response locally
 
     if (currentSectionIndex < sections.length - 1) {
       setCurrentSectionIndex(currentSectionIndex + 1);
@@ -252,6 +252,8 @@ const Dashboard = () => {
 
       console.log('User response submitted successfully!', userResponse);
 
+      localStorage.setItem('userResponse', JSON.stringify(userResponse));
+      console.log('Data after Saving Locally: ', userResponse);
       // Store userResponse locally for future reference
       const storedUserResponses = localStorage.getItem('allUserResponses') || '[]';
       const existingUserResponses = JSON.parse(storedUserResponses);
@@ -278,7 +280,7 @@ const Dashboard = () => {
     localStorage.removeItem('sections');
     localStorage.removeItem('questions');
     localStorage.removeItem('selectedData');
-    localStorage.removeItem('userResponses');
+    // localStorage.removeItem('userResponses');
     navigate('/');
   };
 

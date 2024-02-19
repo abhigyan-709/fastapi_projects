@@ -104,21 +104,32 @@ const Dashboard = () => {
     // Filter categories, sections, and questions based on selectedCategory and selectedSection
     const selectedCategoryData = categories.find((category) => category.name === selectedCategory);
     const selectedSectionData = sections.find((section) => section.id === selectedSection);
-    const selectedQuestionsData = questions.filter((question) => question.section_id === selectedSection);
-
-    // Create an object to represent the selected data
-    const selectedData = {
-      selectedCategory: selectedCategoryData,
-      selectedSection: selectedSectionData,
-      selectedQuestions: selectedQuestionsData,
-    };
-
-    // Log the selected data whenever it changes
-    console.log('Selected Data:', selectedData);
-
-    // Optionally, you can store the selected data in local storage if needed
-    localStorage.setItem('selectedData', JSON.stringify(selectedData));
-  }, [selectedCategory, selectedSection, categories, sections, questions]);
+  
+    // Check if selectedSectionData and its questions are defined
+    if (selectedSectionData && selectedSectionData.questions) {
+      // Map questions_ids to the respective questions
+      const mappedQuestions = selectedSectionData.questions.map((question, index) => ({
+        ...question,
+        question_id: selectedSectionData.questions_ids[index],
+      }));
+  
+      // Create an object to represent the selected data
+      const selectedData = {
+        selectedCategory: selectedCategoryData,
+        selectedSection: {
+          ...selectedSectionData,
+          questions: mappedQuestions,
+        },
+      };
+  
+      // Log the selected data whenever it changes
+      console.log('Selected Data:', selectedData);
+  
+      // Optionally, you can store the selected data in local storage if needed
+      localStorage.setItem('selectedData', JSON.stringify(selectedData));
+    }
+  }, [selectedCategory, selectedSection, categories, sections]);
+  
 
   const handleCategoryChange = async (event) => {
     const selectedCategoryValue = event.target.value;
@@ -175,11 +186,11 @@ const Dashboard = () => {
         return;
       }
   
-      const { selectedCategory, selectedSection, selectedQuestions } = JSON.parse(storedSelectedData);
+      const { selectedCategory, selectedSection } = JSON.parse(storedSelectedData);
   
-      // Ensure that selectedCategory is not undefined and has the id property
-      if (!selectedCategory || !selectedCategory.id) {
-        console.error('Selected category or its id is missing.');
+      // Ensure that selectedCategory and selectedSection are not undefined and have the required properties
+      if (!selectedCategory || !selectedCategory.id || !selectedSection || !selectedSection.id) {
+        console.error('Selected category, section, or their ids are missing.');
         return;
       }
   
@@ -195,10 +206,15 @@ const Dashboard = () => {
           {
             section_id: selectedSection.id,
             section_name: selectedSection.name,
-            answers: userResponses,
+            answers: selectedSection.questions.map((question) => ({
+              question_id: question.question_id,
+              question_text: question.text,
+              answer: question.answers[0].value, // Assuming answers is an array with one value
+            })),
           },
         ],
       };
+      console.log('User Response:', userResponse)
   
       // Post the user response to the server
       const apiUrl = "http://localhost:8000";
@@ -214,7 +230,6 @@ const Dashboard = () => {
       console.error('Error submitting user response', error);
     }
   };
-  
   
 
   const handleLogout = () => {

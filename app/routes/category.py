@@ -8,6 +8,70 @@ from routes.user import get_current_user
 
 industrial_route = APIRouter()
 
+
+@industrial_route.post("/questions/", response_model=QuestionDB, tags=["Industry"])
+async def create_question(
+    question: Question,
+    db_client: MongoClient = Depends(db.get_client)
+):
+    # Create the question in the database
+    question_result = db_client[db.db_name]["question"].insert_one(question.dict())
+    question_db = QuestionDB(**question.dict(), id=str(question_result.inserted_id))
+    return question_db
+
+@industrial_route.get("/questions/", response_model=list[QuestionDB], tags=["Industry"])
+async def get_questions(
+    db_client: MongoClient = Depends(db.get_client)
+):
+    # Retrieve the list of questions from the database
+    questions_cursor = db_client[db.db_name]["question"].find({})
+    questions = [QuestionDB(**question, id=str(question["_id"])) for question in questions_cursor]
+
+    return questions
+
+@industrial_route.get("/questions/{question_id}", response_model=QuestionDB, tags=["Industry"])
+async def get_question_by_id(
+    question_id: str,
+    db_client: MongoClient = Depends(db.get_client)
+):
+    # Retrieve a question by its ID from the database
+    question_doc = db_client[db.db_name]["question"].find_one({"_id": ObjectId(question_id)})
+    if not question_doc:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    question_db = QuestionDB(**question_doc, id=str(question_doc["_id"]))
+    return question_db
+
+@industrial_route.put("/questions/{question_id}", response_model=QuestionDB, tags=["Industry"])
+async def update_question(
+    question_id: str,
+    updated_question: Question,
+    db_client: MongoClient = Depends(db.get_client)
+):
+    # Update a question in the database
+    updated_question_dict = updated_question.dict()
+    del updated_question_dict["id"]  # Remove id from the dict to prevent update issues
+    result = db_client[db.db_name]["question"].update_one({"_id": ObjectId(question_id)}, {"$set": updated_question_dict})
+
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    updated_question_db = QuestionDB(**updated_question_dict, id=question_id)
+    return updated_question_db
+
+@industrial_route.delete("/questions/{question_id}", response_model=QuestionDB, tags=["Industry"])
+async def delete_question(
+    question_id: str,
+    db_client: MongoClient = Depends(db.get_client)
+):
+    # Delete a question from the database
+    question_doc = db_client[db.db_name]["question"].find_one_and_delete({"_id": ObjectId(question_id)})
+    if not question_doc:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    deleted_question_db = QuestionDB(**question_doc, id=str(question_doc["_id"]))
+    return deleted_question_db
+
 @industrial_route.post("/industrial_categories/", response_model=IndustrialCategoryDB, tags=["Industry"])
 async def create_industrial_category(
     industrial_category: IndustrialCategory,

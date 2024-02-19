@@ -61,36 +61,39 @@ const LoginForm = ({ setShowRegistrationForm }) => {
   return (
     <div className="login-container d-flex align-items-center justify-content-center">
       <div className="login-form p-4 border">
-        <h2 className="mb-4">Login</h2>
-        <label className="mb-3">
-          Username:
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            className="form-control"
-          />
-        </label>
+  <h2 className="mb-4">Login</h2>
+  <label className="mb-3">
+    Username:
+    <input
+      type="text"
+      name="username"
+      value={formData.username}
+      onChange={handleInputChange}
+      className="form-control"
+    />
+  </label>
 
-        <label className="mb-3">
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            className="form-control"
-          />
-        </label>
+  <label className="mb-3">
+    Password:
+    <input
+      type="password"
+      name="password"
+      value={formData.password}
+      onChange={handleInputChange}
+      className="form-control"
+    />
+  </label>
 
-        <button onClick={handleLogin} className="btn btn-primary">
-          Login
-        </button>
-        <button onClick={() => setShowRegistrationForm(true)} className="btn btn-secondary">
-        Register
-      </button>
-      </div>
+  <div className="mb-3">
+    <button onClick={handleLogin} className="btn btn-primary mr-2">
+      Login
+    </button>
+    <button onClick={() => setShowRegistrationForm(true)} className="btn btn-secondary">
+      Register
+    </button>
+  </div>
+</div>
+
       {loginMessage && <p className="mt-3">{loginMessage}</p>}
     </div>
   );

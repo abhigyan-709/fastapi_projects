@@ -61,6 +61,7 @@ const HomePage = ({ showRegistrationForm, setShowRegistrationForm }) => {
 };
 
 
+
 function App() {
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
 

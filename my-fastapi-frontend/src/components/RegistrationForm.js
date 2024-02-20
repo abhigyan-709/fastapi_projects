@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const RegistrationForm = () => {
+const RegistrationForm = ({ setShowRegistrationForm }) => {
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -13,7 +13,7 @@ const RegistrationForm = () => {
     password: '',
   });
 
-  const navigate = useNavigate(); // Hook to navigate between routes
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,11 +22,13 @@ const RegistrationForm = () => {
   const handleRegistration = async () => {
     try {
       const response = await axios.post('http://127.0.0.1:8000/register/', formData);
-      console.log(response.data); // Handle the response as needed
+      console.log(response.data);
 
-      // If registration is successful, navigate back to the home page
+      // If registration is successful (status code 201), navigate to the login page
       if (response.status === 201) {
         navigate('/');
+        // Set showRegistrationForm to false to switch to the login form
+        setShowRegistrationForm(false);
       }
     } catch (error) {
       console.error('Registration failed', error);

@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from database.db import db
 from models.user import User
-from models.token import Token, TokenData
-from typing import Optional, Union
+from models.token import Token
+from typing import Union
 from pymongo import MongoClient
 import secrets
 from bson import ObjectId
@@ -50,11 +50,19 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
+
+        # Fetch user details including the role from the database
+        db_client: MongoClient = Depends(db.get_client)
+        user_from_db = db_client[db.db_name]["user"].find_one({"username": username})
+        if user_from_db is None:
+            raise credentials_exception
+
+        user = User(**user_from_db)  # Convert database response to User model
+        return user
     except jwt.ExpiredSignatureError:
         raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
-    return username
 
 @route2.post("/token", response_model=Token, tags=["Login & Authentication"])
 async def login_for_access_token(

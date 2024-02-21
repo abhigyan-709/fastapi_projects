@@ -52,7 +52,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             raise credentials_exception
 
         # Fetch user details including the role from the database
-        db_client: MongoClient = Depends(db.get_client)
+        db_client = db.get_client()  # Use db.get_client directly
         user_from_db = db_client[db.db_name]["user"].find_one({"username": username})
         if user_from_db is None:
             raise credentials_exception
@@ -63,6 +63,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
+
 
 @route2.post("/token", response_model=Token, tags=["Login & Authentication"])
 async def login_for_access_token(

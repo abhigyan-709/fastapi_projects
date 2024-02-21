@@ -8,7 +8,7 @@ from routes.user import get_current_user, User
 
 industrial_route = APIRouter()
 
-current_user: User = Depends(get_current_user) # setting this to global variable as its being used by many functions
+current_user: User = Depends(get_current_user)  # setting this to global variable as it's being used by many functions
 
 def check_admin_user(current_user: User = Depends(get_current_user)):
     if current_user.role != 'admin':
@@ -18,11 +18,8 @@ def check_admin_user(current_user: User = Depends(get_current_user)):
 async def create_question(
     question: Question,
     db_client: MongoClient = Depends(db.get_client),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_admin_user)  # Only admins can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Create the question in the database
     question_result = db_client[db.db_name]["question"].insert_one(question.dict())
     question_db = QuestionDB(**question.dict(), id=str(question_result.inserted_id))
@@ -31,11 +28,8 @@ async def create_question(
 @industrial_route.get("/questions/", response_model=list[QuestionDB], tags=["Industry"])
 async def get_questions(
     db_client: MongoClient = Depends(db.get_client),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # All registered users can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Retrieve the list of questions from the database
     questions_cursor = db_client[db.db_name]["question"].find({})
     questions = [QuestionDB(**question, id=str(question["_id"])) for question in questions_cursor]
@@ -46,11 +40,8 @@ async def get_questions(
 async def get_question_by_id(
     question_id: str,
     db_client: MongoClient = Depends(db.get_client),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)  # All registered users can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Retrieve a question by its ID from the database
     question_doc = db_client[db.db_name]["question"].find_one({"_id": ObjectId(question_id)})
     if not question_doc:
@@ -64,11 +55,8 @@ async def update_question(
     question_id: str,
     updated_question: Question,
     db_client: MongoClient = Depends(db.get_client),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_admin_user)  # Only admins can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Update a question in the database
     updated_question_dict = updated_question.dict()
     del updated_question_dict["id"]  # Remove id from the dict to prevent update issues
@@ -84,11 +72,8 @@ async def update_question(
 async def delete_question(
     question_id: str,
     db_client: MongoClient = Depends(db.get_client),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(check_admin_user)  # Only admins can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Delete a question from the database
     question_doc = db_client[db.db_name]["question"].find_one_and_delete({"_id": ObjectId(question_id)})
     if not question_doc:
@@ -142,12 +127,9 @@ async def create_industrial_category(
 
 @industrial_route.get("/industrial_categories/", response_model=list[IndustrialCategoryDB], tags=["Industry"])
 async def get_industrial_categories(
-    # current_user: str = Depends(get_current_user),
-    db_client: MongoClient = Depends(db.get_client)
+    db_client: MongoClient = Depends(db.get_client),
+    current_user: User = Depends(get_current_user)  # All registered users can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Retrieve the list of industrial categories from the database
     industrial_categories_cursor = db_client[db.db_name]["industrial_category"].find({})
     industrial_categories = []
@@ -162,11 +144,9 @@ async def get_industrial_categories(
 @industrial_route.get("/industrial_categories/{category_name}/sections", response_model=list[SectionDB], tags=["Industry"])
 async def get_sections_for_category(
     category_name: str,
-    db_client: MongoClient = Depends(db.get_client)
+    db_client: MongoClient = Depends(db.get_client),
+    current_user: User = Depends(get_current_user)  # All registered users can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Retrieve sections for the specified category from the database
     industrial_category_doc = db_client[db.db_name]["industrial_category"].find_one({"name": category_name})
     if not industrial_category_doc:
@@ -178,15 +158,12 @@ async def get_sections_for_category(
 
     return sections
 
-
 @industrial_route.get("/sections/{section_id}/questions", response_model=list[QuestionDB], tags=["Industry"])
 async def get_questions_for_section(
     section_id: str,
-    db_client: MongoClient = Depends(db.get_client)
+    db_client: MongoClient = Depends(db.get_client),
+    current_user: User = Depends(get_current_user)  # All registered users can access this endpoint
 ):
-    # Check if the user has admin role
-    check_admin_user(current_user)
-
     # Retrieve questions for the specified section from the database
     section_doc = db_client[db.db_name]["section"].find_one({"_id": ObjectId(section_id)})
     if not section_doc:

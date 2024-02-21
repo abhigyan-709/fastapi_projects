@@ -114,13 +114,16 @@ async def register(user: User, db_client: MongoClient = Depends(db.get_client)):
 
 
 @route2.get("/users/me", response_model=User, tags=["Read User & Current User"])
-async def read_current_user(current_user: str = Depends(get_current_user), db_client: MongoClient = Depends(db.get_client)):
-    user_from_db = db_client[db.db_name]["user"].find_one({"username": current_user})
-    
+async def read_current_user(current_user: User = Depends(get_current_user), db_client: MongoClient = Depends(db.get_client)):
+    # Use the username from the current_user object to filter the database query
+    user_from_db = db_client[db.db_name]["user"].find_one({"username": current_user.username})
+
     if user_from_db:
         return user_from_db
 
     raise HTTPException(status_code=404, detail="User not found")
+
+
 
 @route2.get("/users/{user_id}", response_model=User, tags=["Read User & Current User"])
 async def read_user_by_id(

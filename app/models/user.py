@@ -10,6 +10,9 @@ class User(BaseModel):
     username: str
     email: EmailStr
     password: str
+    role : str = "user" # default user is set to the user role
 
     class Config:
         orm_mode = True
+
+

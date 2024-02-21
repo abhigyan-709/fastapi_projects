@@ -144,6 +144,7 @@ async def get_sections_for_category(
 
     return sections
 
+
 @industrial_route.get("/sections/{section_id}/questions", response_model=list[QuestionDB], tags=["Industry"])
 async def get_questions_for_section(
     section_id: str,

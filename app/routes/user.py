@@ -87,11 +87,23 @@ async def login_for_access_token(
     )
 
 
-@route2.post("/register/", tags=["Login & Authentication"])
+@route2.post("/register/", tags=["User Registration"])
 async def register(user: User, db_client: MongoClient = Depends(db.get_client)):
-    user_dict = user.dict()
+    # Check if the username is already taken
+    existing_user_username = db_client[db.db_name]["user"].find_one({"username": user.username})
+    if existing_user_username:
+        raise HTTPException(status_code=400, detail="Username is already taken")
+
+    # Check if the email is already taken
+    existing_user_email = db_client[db.db_name]["user"].find_one({"email": user.email})
+    if existing_user_email:
+        raise HTTPException(status_code=400, detail="Email is already registered")
+
     # Hash the password before storing it in the database
+    user_dict = user.dict()
     user_dict['password'] = get_password_hash(user.password)
+    
+    # Insert the user into the database
     result = db_client[db.db_name]["user"].insert_one(user_dict)
     
     # Convert ObjectId to string
@@ -99,6 +111,7 @@ async def register(user: User, db_client: MongoClient = Depends(db.get_client)):
 
     # Return response with the user data
     return JSONResponse(content=user_dict, status_code=201)
+
 
 @route2.get("/users/me", response_model=User, tags=["Read User & Current User"])
 async def read_current_user(current_user: str = Depends(get_current_user), db_client: MongoClient = Depends(db.get_client)):

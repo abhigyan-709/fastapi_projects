@@ -35,7 +35,17 @@ In Terminal, run the following command:
   ```bash
   ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
 
-
 - Generate SSH Key
 In Terminal, run the following command:
+
+## 5. GitHub Private Repository
+
+### Generate SSH Key (macOS/Linux)
+
+1. Open Terminal.
+
+2. Check for existing SSH keys:
+   ```bash
+   ls -al ~/.ssh
+
 

@@ -20,4 +20,22 @@
   ```bash
   ssh -i path/to/your/private-key.pem ec2-user@your-ec2-public-ip
 
--
+## 3. Install Dependencies
+
+- Update the package lists and install necessary dependencies:
+  ```bash
+  sudo apt update
+  sudo apt install python3-pip python3-venv nginx
+
+## 4. Pull the code from GitHub Private Repository
+
+- Generate SSH Key
+In Terminal, run the following command:
+
+  ```bash
+  ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+
+
+- Generate SSH Key
+In Terminal, run the following command:
+

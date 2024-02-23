@@ -1,51 +1,24 @@
-# FastAPI Static Deployment Guide
+# FastAPI Deployment Guide
 
-## Table of Contents
-1. [EC2 Instance Setup](#ec2-instance-setup)
-2. [SSH Connection](#ssh-connection)
-3. [Install Dependencies](#install-dependencies)
-4. [GitHub Private Repository](#github-private-repository)
-5. [NGINX Configuration](#nginx-configuration)
-6. [Domain Setup with Route 53](#domain-setup-with-route-53)
-7. [SSL Installation](#ssl-installation)
+## 1. Create an EC2 Instance
 
-## 1. EC2 Instance Setup
+- Go to the AWS Management Console.
 
-- Launch an EC2 instance on AWS with the desired specifications.
-- Configure security groups to allow SSH (port 22) and HTTP/HTTPS traffic (ports 80 and 443).
+- Launch an EC2 instance, choosing an Amazon Machine Image (AMI) and instance type.
 
-## 2. SSH Connection
+- Configure security groups to allow SSH (port 22) and HTTP/HTTPS (ports 80 and 443) traffic.
 
-- Connect to your EC2 instance using SSH:
+- Download the private key file (.pem) during instance creation.
+
+- Connect to the instance using SSH:
   ```bash
-  ssh -i path/to/your/private-key.pem ec2-user@your-ec2-public-ip
+  ssh -i path/to/your/private-key.pem ubuntu@your_server_ip
 
-## 3. Install Dependencies
 
-- Update the package lists and install necessary dependencies:
+## 2. Install Nginx on EC2 Instance
   ```bash
-  sudo apt update
-  sudo apt install python3-pip python3-venv nginx
-
-## 4. Pull the code from GitHub Private Repository
-
-- Generate SSH Key
-In Terminal, run the following command:
-
-  ```bash
-  ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-
-- Generate SSH Key
-In Terminal, run the following command:
-
-## 5. GitHub Private Repository
-
-### Generate SSH Key (macOS/Linux)
-
-1. Open Terminal.
-
-2. Check for existing SSH keys:
-   ```bash
-   ls -al ~/.ssh
+    sudo apt update
+    sudo apt install nginx
 
 
+## 3. Install Nginx on EC2 Instance

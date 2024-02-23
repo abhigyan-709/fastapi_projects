@@ -85,6 +85,41 @@ Above you have seen the project structure for the fastapi
 
 2. Visit the FastAPI documentation at http://127.0.0.1:8000/docs to interact with the API.
 
+# Launching an EC2 Instance on AWS and Configuring Nginx
+
+## 1. Launch an EC2 Instance
+
+- Go to the AWS Management Console.
+- Click on "Services" and select "EC2" under the "Compute" section.
+- Click on "Launch Instance".
+- Choose an Amazon Machine Image (AMI), such as Ubuntu Server.
+- Select an instance type based on your requirements.
+- Configure instance details, including the number of instances, network settings, and storage.
+- Add tags for easier identification (optional).
+- Configure security groups to allow SSH (port 22) and HTTP/HTTPS (ports 80 and 443) traffic.
+- Review your instance configuration and click "Launch".
+- Choose an existing key pair or create a new one. Download the private key file (.pem) and keep it secure.
+- Click "Launch Instances".
+
+## 2. Connect to the EC2 Instance via SSH
+
+- Open a terminal on your local machine.
+
+- Change the permissions of your private key file to secure it:
+  ```bash
+  chmod 400 path/to/your/private-key.pem
+
+- Connect to the instance using SSH:
+ssh -i path/to/your/private-key.pem ubuntu@your_server_ip
+
+## 3. Install Nginx on the EC2 Instance
+-Update the package index:
+sudo apt update
+
+-Install Nginx:
+sudo apt install nginx
+
+
 
 
 

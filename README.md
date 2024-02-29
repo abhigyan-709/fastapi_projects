@@ -109,6 +109,8 @@ Above you have seen the project structure for the fastapi
   ```bash
   chmod 400 path/to/your/private-key.pem
 
+  ```
+
 - Connect to the instance using SSH:
 ssh -i path/to/your/private-key.pem ubuntu@your_server_ip
 

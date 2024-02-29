@@ -42,15 +42,20 @@ Above you have seen the project structure for the fastapi
    ```bash
    git clone https://github.com/your-username/fastapi-project.git
 
+   ```
+
 2. Navigate to the project directory
 
     ```bash
     cd fastapi-project
+
+    ```
 3. Create a virtual environment:
 
     ```bash
     python -m venv venv
 
+    ```
 4. Activate the Virtua Environment
     #### Windows
     ```bash
@@ -60,13 +65,14 @@ Above you have seen the project structure for the fastapi
 
     ```bash
     source venv/bin/activate
+    ```
 
 5. Install the dependencies:
 
     ```bash
     pip install -r requirements.txt
 
-
+    ```
 ## Configuration
 
 1. Create a .env file in the project root and configure your MongoDB connection:

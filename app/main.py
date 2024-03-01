@@ -10,7 +10,22 @@ from routes.user import route2, get_current_user  # Import the dependency
 
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+app = FastAPI(title="Industrial Carbon Emission Calculator API",
+              description="All in ONE advanced Calculator with User Management.",
+              version="1.1.0",
+    #           servers=[
+    #     {"url": "https://auth.globaltamasha.in", "description": "Staging environment"},
+    #     {"url": "https://auth.globaltamasha.com", "description": "Production environment"},
+    # ],
+    docs_url="/docs",
+    contact={
+        "name": "Developed by Abhigyan Kumar",
+    },
+    
+    swagger_ui_parameters={"syntaxHighlight.theme": "obsidian"})
+
+
+app.openapi_version = "3.0.2"
 
 
 
@@ -23,11 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(
-#     item_router,
-#     prefix="/api",
-#     dependencies=[Depends(get_current_user)],  # Add the dependency here
-# )
+
 
 app.include_router(
     industrial_route,
